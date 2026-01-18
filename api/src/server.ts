@@ -1,21 +1,20 @@
-const WebSocket = require("ws");
+import WebSocket, { WebSocketServer } from 'ws';
+const wss = new WebSocketServer({port: 8080});
 
-const wss = new WebSocket.Server({ port: 8080 });
+let senders = new Set<WebSocket>();
+let receivers = new Set<WebSocket>();
+let connectedUsers: number = 0;
+let users: Record<string, string> = {}; // userId -> username mapping
+let connections = new Map<WebSocket, string>(); // ws -> userId mapping
 
-let senders = new Set();
-let receivers = new Set();
-let connectedUsers = 0;
-let users = {}; // userId -> username mapping
-let connections = new Map(); // ws -> userId mapping
-
-wss.on("connection", (ws) => {
+wss.on("connection", (ws: WebSocket) => {
   connectedUsers++;
   broadcastParticipantCount();
   console.log("New client connected");
 
   ws.on("message", (message) => {
     try {
-      const data = JSON.parse(message);
+      const data = JSON.parse(message.toString());
 
       if (data.type === "updateUsername") {
         users[data.userId] = data.username;

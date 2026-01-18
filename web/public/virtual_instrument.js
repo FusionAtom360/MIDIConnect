@@ -1,4 +1,4 @@
-class VirtualSoundTable {
+class VirtualInstrument {
   constructor() {
     const playbackToggle = document.getElementById("virtualPlaybackToggle");
     playbackToggle.addEventListener("change", () => {
