@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let userId = generateUserId();
   let loopback = false;
 
-  const soundTable = new VirtualSoundTable();
+  const virtualInstrument = new VirtualInstrument();
 
   const playbackToggle = document.getElementById("virtualPlaybackToggle");
   playbackToggle.addEventListener("change", () => {
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setupWebSocket() {
     //socket = new WebSocket("ws://192.168.68.144:8080");
-    socket = new WebSocket("https://midi-app-cz4r.onrender.com");
+    socket = new WebSocket("https://midiconnect.onrender.com");
 
     socket.onopen = () => {
       console.log(`Connected to ${socket.url}`);
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (virtualPlaybackEnabled) {
-      soundTable.handleMidiMessage(data);
+      virtualInstrument.handleMidiMessage(data);
       console.log("MIDI Message sent to VST");
       const midiMessage = `MIDI from ${data.username} to Virtual Playback - Command: ${data.command}, Note: ${data.note}, Velocity: ${data.velocity}`;
       console.log(midiMessage);
