@@ -4,6 +4,13 @@ A web-based application for real-time MIDI communication between remote clients.
 
 Live Demo: https://midiconnect.web.app
 
+## Deployment
+
+Pushes to `main` build the Vite app in `web/` and deploy it to Firebase Hosting through
+`.github/workflows/firebase-hosting-deploy.yml`. Add a Firebase service-account JSON key
+to the repository as the `FIREBASE_SERVICE_ACCOUNT_MIDICONNECT` GitHub Actions secret
+before enabling the workflow.
+
 ## Features
 
 - Real-time MIDI transmission over WebSockets

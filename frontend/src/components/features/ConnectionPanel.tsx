@@ -3,12 +3,23 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
 
-export function ConnectionPanel() {
+type ConnectionPanelProps = {
+    status: 'connected' | 'disconnected';
+    peerCount: number;
+    sendEnabled: boolean;
+    receiveEnabled: boolean;
+    realtime: boolean;
+    onSendEnabled: (value: boolean) => void;
+    onReceiveEnabled: (value: boolean) => void;
+    onRealtime: (value: boolean) => void;
+};
+
+export function ConnectionPanel({ status, peerCount, sendEnabled, receiveEnabled, realtime, onSendEnabled, onReceiveEnabled, onRealtime }: ConnectionPanelProps) {
     return (
         <Card className="col-span-full lg:col-span-1">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-white">Connection</h3>
-                <Badge variant="red">Disconnected</Badge>
+                <Badge variant={status === 'connected' ? 'green' : 'red'}>{status === 'connected' ? 'Connected' : 'Disconnected'}</Badge>
             </div>
             
             <div className="space-y-6">
@@ -41,12 +52,12 @@ export function ConnectionPanel() {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">Network Status</span>
-                        <span className="text-red-400 font-medium">Offline</span>
+                        <span className={status === 'connected' ? 'text-green-400 font-medium' : 'text-red-400 font-medium'}>{status === 'connected' ? 'Online' : 'Offline'}</span>
                     </div>
                     
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">Active Peers</span>
-                        <span className="text-white font-medium">0</span>
+                        <span className="text-white font-medium">{peerCount}</span>
                     </div>
                     
                     <div className="flex items-center justify-between text-sm">
@@ -59,12 +70,20 @@ export function ConnectionPanel() {
                     <p className="text-xs text-gray-500 mb-3">Connection Settings</p>
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                            <input type="checkbox" className="rounded" defaultChecked />
-                            Auto-reconnect
+                            <input type="checkbox" className="rounded" checked={sendEnabled} onChange={(event) => onSendEnabled(event.target.checked)} />
+                            Send MIDI
                         </label>
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                            <input type="checkbox" className="rounded" />
-                            Low latency mode
+                            <input type="checkbox" className="rounded" checked={receiveEnabled} onChange={(event) => onReceiveEnabled(event.target.checked)} />
+                            Receive MIDI
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                            <input type="checkbox" className="rounded" checked={realtime} onChange={(event) => onRealtime(event.target.checked)} />
+                            Realtime mode
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                            <input type="checkbox" className="rounded" defaultChecked />
+                            Auto-reconnect
                         </label>
                     </div>
                 </div>

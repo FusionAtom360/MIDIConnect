@@ -1,15 +1,21 @@
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import type { MidiDevice } from '../../hooks/useMidiConnection';
 
-const mockDevices = [];
-    // { id: '1', name: 'Arturia KeyLab 88', type: 'input', connected: true },
-    // { id: '2', name: 'Moog Subsequent 37', type: 'input', connected: true },
-    // { id: '3', name: 'Roland TR-8S', type: 'input', connected: false },
-    // { id: '4', name: 'Ableton Live MIDI Out', type: 'output', connected: true }];
+type MidiDeviceListProps = {
+    devices: MidiDevice[];
+    onRefresh: () => Promise<void>;
+    onSelectInput: (id: string) => void;
+    onSelectOutput: (id: string) => void;
+    loopback: boolean;
+    virtualPlayback: boolean;
+    onLoopback: (value: boolean) => void;
+    onVirtualPlayback: (value: boolean) => void;
+};
 
-export function MidiDeviceList() {
-    const localDevices = mockDevices;
+export function MidiDeviceList({ devices, onRefresh, onSelectInput, onSelectOutput, loopback, virtualPlayback, onLoopback, onVirtualPlayback }: MidiDeviceListProps) {
+    const localDevices = devices;
     const localCount = localDevices.length;
     return (
         <Card className="col-span-full">
@@ -17,7 +23,17 @@ export function MidiDeviceList() {
                 <div>
                     <h3 className="text-xl font-bold text-white">MIDI Devices</h3>
                 </div>
-                <Button variant="secondary" size="sm">
+                <div className="mt-6 flex flex-wrap gap-4 border-t border-gray-700 pt-4 text-sm text-gray-300">
+                    <label className="flex items-center gap-2">
+                        <input type="checkbox" checked={loopback} onChange={(event) => onLoopback(event.target.checked)} />
+                        Loopback
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <input type="checkbox" checked={virtualPlayback} onChange={(event) => onVirtualPlayback(event.target.checked)} />
+                        Virtual playback
+                    </label>
+                </div>
+                <Button variant="secondary" size="sm" onClick={() => void onRefresh()}>
                     <span className="mr-2 material-symbols-outlined !text-sm">refresh</span>
                     Refresh
                 </Button>
@@ -60,11 +76,13 @@ export function MidiDeviceList() {
                                         </div>
                                         
                                         <div className="flex items-center gap-2">
-                                            <Badge variant={device.connected ? 'green' : 'gray'}>
-                                                {device.connected ? 'Connected' : 'Offline'}
-                                            </Badge>
-                                            <button className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-white cursor-pointer">
-                                                <span className="material-symbols-outlined !text-md">settings</span>
+                                            <Badge variant="green">Available</Badge>
+                                            <button
+                                                className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-white cursor-pointer"
+                                                onClick={() => device.type === 'input' ? onSelectInput(device.id) : onSelectOutput(device.id)}
+                                                aria-label={`Select ${device.name}`}
+                                            >
+                                                <span className="material-symbols-outlined !text-md">check_circle</span>
                                             </button>
                                         </div>
                                     </div>

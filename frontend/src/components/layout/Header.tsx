@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Profile } from "../features/Profile";
 
-export function Header() {
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [username, setUsername] = useState('');
+type HeaderProps = {
+    isPianoOpen: boolean;
+    onTogglePiano: () => void;
+    username: string;
+    onUsernameChange: (username: string) => void;
+};
 
-    useEffect(() => {
-        const storedUsername = localStorage.getItem('user');
-        if (storedUsername) {
-            setUsername(storedUsername);
-        }
-    }, []);
+export function Header({ isPianoOpen, onTogglePiano, username, onUsernameChange }: HeaderProps) {
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const handleClose = () => {
         setIsProfileOpen(false);
@@ -18,6 +17,7 @@ export function Header() {
 
     const handleSave = () => {
         localStorage.setItem('user', username);
+        onUsernameChange(username);
         setIsProfileOpen(false);
     };
 
@@ -36,7 +36,20 @@ export function Header() {
                     </div>
                 </div>
 
-                <nav className="flex items-center gap-6">
+                <nav className="flex items-center gap-4">
+                    <button
+                        className={`w-9 h-9 rounded-full border transition flex items-center justify-center cursor-pointer ${
+                            isPianoOpen
+                                ? "bg-blue-500/20 border-blue-400 text-blue-200"
+                                : "bg-gray-900/60 border-gray-700 text-gray-300 hover:text-white"
+                        }`}
+                        onClick={onTogglePiano}
+                        aria-pressed={isPianoOpen}
+                        aria-label="Toggle piano dock"
+                        type="button"
+                    >
+                        <span className="text-lg material-symbols-outlined select-none">piano</span>
+                    </button>
                     <div className="text-white transition text-sm font-medium flex items-center gap-2 cursor-pointer" onClick={() => setIsProfileOpen(true)}>
                         {username || 'User'}
                         <button className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center cursor-pointer" onClick={() => setIsProfileOpen(true)}>
@@ -48,7 +61,7 @@ export function Header() {
             <Profile
                 isOpen={isProfileOpen}
                 username={username}
-                onUsernameChange={setUsername}
+                onUsernameChange={onUsernameChange}
                 onSave={handleSave}
                 onClose={handleClose}
             />
